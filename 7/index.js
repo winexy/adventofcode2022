@@ -1,4 +1,3 @@
-import { inspect } from 'util'
 import fs from 'fs'
 import readline from 'readline'
 
@@ -82,27 +81,23 @@ function mark_directory_sizes(node) {
   return node[__size__]
 }
 
-function get_dir_sizes(root) {
-  let dirs = []
-  let queue = [['/', root]]
+function get_dir_sizes(node, name = '/', dirs = []) {
+  dirs.push({ name, size: node[__size__] });
 
-  while (queue.length) {
-    const [name, ref] = queue.pop()
+  for (const name in node) {
+    const resource = node[name]
+    const is_file = typeof resource === 'number'
+    const is_parent_ref = name === '..'
+    const is_size_prop = name === __size__
 
-    dirs.push({ name, size: ref[__size__] })
-
-    for (const name in ref) {
-      const resource = ref[name]
-      const is_file = typeof resource === 'number'
-
-      if (!is_file && name !== '..' && name !== __size__) {
-        queue.push([name, resource])
-      }
+    if (!is_file && !is_parent_ref && !is_size_prop) {
+      get_dir_sizes(resource, name, dirs);
     }
   }
 
   return dirs
 }
+
 
 mark_directory_sizes(root)
 
