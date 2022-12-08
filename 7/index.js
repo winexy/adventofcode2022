@@ -63,6 +63,10 @@ for await (const line of lines) {
 
 const __size__ = Symbol('__size__')
 
+/**
+ * @description
+ * Traverse FS tree and add __size__ property for directories
+ */
 function mark_directory_sizes(node) {
   if (typeof node === 'number') {
     return node
@@ -81,6 +85,10 @@ function mark_directory_sizes(node) {
   return node[__size__]
 }
 
+/**
+ * @description
+ * Traverse FS tree and extract each directory name and size
+ */
 function get_dir_sizes(node, name = '/', dirs = []) {
   dirs.push({ name, size: node[__size__] });
 
