@@ -90,7 +90,7 @@ function mark_directory_sizes(node) {
  * Traverse FS tree and extract each directory name and size
  */
 function get_dir_sizes(node, name = '/', dirs = []) {
-  dirs.push({ name, size: node[__size__] });
+  dirs.push({ name, size: node[__size__] })
 
   for (const name in node) {
     const resource = node[name]
@@ -99,18 +99,30 @@ function get_dir_sizes(node, name = '/', dirs = []) {
     const is_size_prop = name === __size__
 
     if (!is_file && !is_parent_ref && !is_size_prop) {
-      get_dir_sizes(resource, name, dirs);
+      get_dir_sizes(resource, name, dirs)
     }
   }
 
   return dirs
 }
 
-
 mark_directory_sizes(root)
 
 const dir_sizes = get_dir_sizes(root)
+  .sort((a, z) => a.size - z.size)
+
+const part1 = dir_sizes
   .filter(dir => dir.size <= 100_000)
   .reduce((a, b) => a + b.size, 0)
 
-console.log(dir_sizes)
+const total_space = 70_000_000
+const required_for_update = 30_000_000
+
+const { size: total_used_space } = dir_sizes.find(dir => dir.name === '/');
+
+const unused_space = total_space - total_used_space
+const needed_space = required_for_update - unused_space;
+
+const { size: part2 } = dir_sizes.find(dir => dir.size >= needed_space)
+
+console.log({ part1, part2 })
