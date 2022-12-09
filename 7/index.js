@@ -10,23 +10,6 @@ root['..'] = root
 
 let cursor = root
 
-function cd(dir) {
-  if (dir === '/') {
-    cursor = root
-    return
-  }
-
-  const has_dir = dir in cursor
-
-  if (!has_dir) {
-    cursor[dir] = {
-      '..': cursor,
-    }
-  }
-
-  cursor = cursor[dir]
-}
-
 for await (const line of lines) {
   const tokens = line.split(' ')
 
@@ -37,7 +20,13 @@ for await (const line of lines) {
       switch (cmd) {
         case 'cd': {
           const dir_name = tokens[2]
-          cd(dir_name)
+
+          if (dir_name === '/') {
+            cursor = root
+            return
+          }
+        
+          cursor = cursor[dir_name]
           break
         }
       }
